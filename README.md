@@ -6,7 +6,7 @@ A simplified replica of Fireflies.ai's core functionality with meeting recording
 
 1. **Clone the repository**
    ```bash
-   git clone [your-repo-url]
+   git clone git@github.com:Tapudp/fireflies-clone-transcribe.git
    cd fireflies-clone
    ```
 
