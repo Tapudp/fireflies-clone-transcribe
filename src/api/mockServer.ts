@@ -1,3 +1,4 @@
+import httpMock from './httpMock';
 import type { Meeting, TranscriptionSegment, ActionItem } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -29,9 +30,17 @@ const meetings: Meeting[] = [
   }
 ];
 
+/**
+ * 200 for success
+ * 400 for bad requests
+ * 404 for not found
+ * 422 for validation errors
+ */
+
 export const mockApi = {
   // Meeting operations
   createMeeting: (title: string, participants: string[]): Promise<Meeting> => {
+    if (!title) return httpMock.error('Title is required', 422);
     const newMeeting: Meeting = {
       id: uuidv4(),
       title,
@@ -39,40 +48,41 @@ export const mockApi = {
       participants,
     };
     meetings.push(newMeeting);
-    return Promise.resolve(newMeeting);
+    return httpMock.success(newMeeting);
   },
 
-  getMeetings: (): Promise<Meeting[]> => {
-    return Promise.resolve([...meetings]);
+  getMeetings: (): Promise<Meeting[]> => httpMock.success([...meetings]),
+
+  getMeeting: (id: string): Promise<Meeting> => {
+    const meeting = meetings.find(m => m.id === id);
+    return meeting
+      ? httpMock.success(meeting)
+      : httpMock.error('Meeting not found', 404);
   },
 
-  getMeeting: (id: string): Promise<Meeting | undefined> => {
-    return Promise.resolve(meetings.find(m => m.id === id));
-  },
-
-  updateMeeting: (id: string, updates: Partial<Meeting>): Promise<Meeting> => {
+  updateMeeting: (id: string, updates: Partial<Meeting>) => {
     const index = meetings.findIndex(m => m.id === id);
-    if (index >= 0) {
-      meetings[index] = { ...meetings[index], ...updates }; // Update
-      return Promise.resolve(meetings[index]);
-    }
-    return Promise.reject('Meeting not found');
+    if (index === -1) return httpMock.error('Meeting not found', 404);
+
+    meetings[index] = { ...meetings[index], ...updates };
+    return httpMock.success(meetings[index]);
   },
+
 
   // Recording simulation
-  startRecording: (meetingId: string): Promise<{ success: boolean }> => {
+  startRecording: (meetingId: string) => {
     const meeting = meetings.find(m => m.id === meetingId);
-    if (meeting) {
-      meeting.recordingUrl = `https://mock-recording-service.com/${meetingId}`;
-      return Promise.resolve({ success: true });
-    }
-    return Promise.resolve({ success: false });
+    if (!meeting) return httpMock.error('Meeting not found', 404);
+
+    meeting.recordingUrl = `https://mock-recording-service.com/${meetingId}`;
+    return httpMock.success({ success: true }, 500); // Simulate network delay
   },
+
 
   // Transcription simulation
   generateTranscription: async (meetingId: string): Promise<TranscriptionSegment[]> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    const meeting = meetings.find(m => m.id === meetingId);
+    if (!meeting) return httpMock.error('Meeting not found', 404);
 
     const mockTranscription: TranscriptionSegment[] = [
       {
@@ -95,21 +105,15 @@ export const mockApi = {
       },
     ];
 
-    const meeting = meetings.find(m => m.id === meetingId);
-    if (meeting) {
-      meeting.transcription = mockTranscription;
-    }
-
-    return mockTranscription;
+    meeting.transcription = mockTranscription;
+    return httpMock.success(mockTranscription, 2000); // Simulate processing delay
   },
 
   // Summary & Action Items simulation
   generateSummary: async (meetingId: string): Promise<{ summary: string; actionItems: ActionItem[] }> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // More realistic mock data based on transcription
     const meeting = meetings.find(m => m.id === meetingId);
+    if (!meeting) return httpMock.error('Meeting not found', 404);
+
     let mockSummary = 'Could not generate summary.';
     let mockActionItems: ActionItem[] = [];
 
@@ -146,6 +150,9 @@ export const mockApi = {
       meetings[meetingIndex].actionItems = mockActionItems;
     }
 
-    return { summary: mockSummary, actionItems: mockActionItems };
+    return httpMock.success(
+      { summary: mockSummary, actionItems: mockActionItems },
+      1500 // Simulate AI processing delay
+    );
   },
 };
