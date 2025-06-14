@@ -1,6 +1,7 @@
 # Fireflies.ai Clone - Technical Challenge
 
 A simplified replica of Fireflies.ai's core functionality with meeting recording simulation, transcription, and summary generation.
+- Available to view on this web-URL : https://fireflies-clone-transcribe-git-main-divyesh-parmars-projects.vercel.app/
 
 ## Setup & Installation
 
