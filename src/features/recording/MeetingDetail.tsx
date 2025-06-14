@@ -2,7 +2,7 @@ import type { Meeting } from "../../api/types";
 import { mockApi } from "../../api/mockServer";
 import { FiArrowLeft, FiMic, FiCheck, FiX } from "react-icons/fi";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TranscriptionViewer from "../transcription/TranscriptionViewer";
 
 interface MeetingDetailProps {
@@ -55,20 +55,54 @@ export default function MeetingDetail({ meeting, onBack }: MeetingDetailProps) {
     setActiveTab("summary");
   };
 
-  const toggleActionItem = (itemId: string) => {
-    setCurrentMeeting((prev) => {
-      if (!prev.actionItems) return prev;
+  const toggleActionItem = async (itemId: string) => {
+    const item = currentMeeting.actionItems?.find((i) => i.id === itemId);
+    if (!item) return;
 
-      const updatedActionItems = prev.actionItems.map((item) =>
-        item.id === itemId ? { ...item, completed: !item.completed } : item
+    try {
+      // Optimistic update
+      const updatedItems = currentMeeting.actionItems?.map((i) =>
+        i.id === itemId ? { ...i, completed: !i.completed } : i
       );
+      setCurrentMeeting((prev) => ({ ...prev, actionItems: updatedItems }));
 
-      return {
+      // Update with mock server (includes built-in delay)
+      await mockApi.updateMeeting(currentMeeting.id, {
+        actionItems: updatedItems,
+      });
+
+      // Success feedback
+      alert(
+        `Action item marked as ${!item.completed ? "complete" : "incomplete"}`
+      );
+    } catch (error) {
+      // Revert on error
+      setCurrentMeeting((prev) => ({
         ...prev,
-        actionItems: updatedActionItems,
-      };
-    });
+        actionItems: prev.actionItems?.map((i) =>
+          i.id === itemId ? { ...i, completed: item.completed } : i
+        ),
+      }));
+      console.error("Failed to save changes with this error : ", error);
+      alert("Failed to save changes");
+    }
   };
+
+  // to sync with server data
+  useEffect(() => {
+    const loadMeeting = async () => {
+      try {
+        const freshMeeting = await mockApi.getMeeting(meeting.id);
+        if (freshMeeting) {
+          setCurrentMeeting(freshMeeting);
+        }
+      } catch (error) {
+        console.error("Failed to refresh meeting:", error);
+      }
+    };
+
+    loadMeeting();
+  }, [meeting.id]); // Re-run when meeting ID changes
 
   return (
     <div className="meeting-detail">

@@ -51,12 +51,12 @@ export const mockApi = {
     return httpMock.success(newMeeting);
   },
 
-  getMeetings: (): Promise<Meeting[]> => httpMock.success([...meetings]),
+  getMeetings: (): Promise<Meeting[]> => httpMock.success([...meetings], 1500),
 
   getMeeting: (id: string): Promise<Meeting> => {
     const meeting = meetings.find(m => m.id === id);
     return meeting
-      ? httpMock.success(meeting)
+      ? httpMock.success(meeting, 1000)
       : httpMock.error('Meeting not found', 404);
   },
 
@@ -65,7 +65,7 @@ export const mockApi = {
     if (index === -1) return httpMock.error('Meeting not found', 404);
 
     meetings[index] = { ...meetings[index], ...updates };
-    return httpMock.success(meetings[index]);
+    return httpMock.success(meetings[index], 800);
   },
 
 
