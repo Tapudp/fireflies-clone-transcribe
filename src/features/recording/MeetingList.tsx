@@ -18,7 +18,7 @@ export default function MeetingList({
   return (
     <div className="meeting-list">
       <div className="meeting-list-header">
-        <h2>Your Meetings</h2>
+        <h2 className="meeting-list-title">Your Meetings</h2>
         <button
           onClick={onCreateMeeting}
           className="create-meeting-btn"
@@ -40,7 +40,10 @@ export default function MeetingList({
               onClick={() => onSelectMeeting(meeting)}
               className="meeting-item"
             >
-              <h3>{meeting.title}</h3>
+              <div className="meeting-item-header">
+                <h3>{meeting.title}</h3>
+                <span className="meeting-id">#{meeting.id.slice(0, 6)}</span>
+              </div>
               <p>{format(new Date(meeting.date), "MMM dd, yyyy - h:mm a")}</p>
               <p>Participants: {meeting.participants.join(", ")}</p>
             </li>

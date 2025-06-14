@@ -76,7 +76,10 @@ export default function MeetingDetail({ meeting, onBack }: MeetingDetailProps) {
         <FiArrowLeft /> Back to meetings
       </button>
 
-      <h2>{currentMeeting.title}</h2>
+      <div className="meeting-item-header">
+        <h2>{currentMeeting.title}</h2>
+        <span className="meeting-id">#{meeting.id.slice(0, 6)}</span>
+      </div>
       <p>{format(new Date(currentMeeting.date), "MMM dd, yyyy - h:mm a")}</p>
       <p>Participants: {currentMeeting.participants.join(", ")}</p>
 
@@ -110,8 +113,15 @@ export default function MeetingDetail({ meeting, onBack }: MeetingDetailProps) {
           <div className="recording-section">
             {currentMeeting.recordingUrl ? (
               <div className="recording-actions">
-                <p className="recording-status">
-                  <FiMic /> Recording available
+                <p
+                  className="recording-status"
+                  onClick={() =>
+                    alert(
+                      "This would play the recording in a real implementation"
+                    )
+                  }
+                >
+                  <FiMic /> Recording available (click to play)
                 </p>
                 <div className="action-buttons">
                   {!currentMeeting.transcription && (

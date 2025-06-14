@@ -3,6 +3,7 @@ import { mockApi } from "./api/mockServer";
 import type { Meeting } from "./api/types";
 import MeetingList from "./features/recording/MeetingList";
 import MeetingDetail from "./features/recording/MeetingDetail";
+import "./App.css";
 
 function App() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);

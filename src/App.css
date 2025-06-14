@@ -21,6 +21,8 @@ body {
 .app-header {
   margin-bottom: 30px;
   text-align: center;
+  cursor: default;
+  user-select: none;
 }
 
 /* Meeting list styles */
@@ -29,6 +31,11 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.meeting-list-title {
+  cursor: default;
+  user-select: none;
 }
 
 .create-meeting-btn {
@@ -47,19 +54,49 @@ body {
   list-style: none;
 }
 
-.meeting-item {
-  background-color: white !important;
-  color: #333 !important;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.2s;
+.meeting-items .meeting-item {
+  background: #ffffff;
+  color: #2d3748;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #4a6fa5; /* Accent border */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.meeting-item:hover {
+.meeting-items .meeting-item:hover {
   transform: translateY(-2px);
+  background: #f8fafc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-left-color: #3b82f6; /* Brighter accent on hover */
+  cursor: pointer;
+}
+
+.meeting-items .meeting-item h3 {
+  color: #1e40af;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.meeting-items .meeting-item p {
+  color: #4b5563;
+  font-size: 0.9rem;
+  margin: 4px 0;
+}
+
+.meeting-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.meeting-id {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-family: monospace;
+  opacity: 0.8;
 }
 
 /* Meeting detail styles */
@@ -69,9 +106,9 @@ body {
   gap: 5px;
   margin-bottom: 20px;
   background: none;
-  border: none;
   cursor: pointer;
   color: #4a6fa5;
+  border: 1px solid #4a6fa5;
 }
 
 .recording-section {
@@ -207,6 +244,13 @@ body {
   align-items: center;
   gap: 5px;
   color: #e74c3c;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.recording-status:hover {
+  color: #3b82f6;
+  text-decoration: underline;
 }
 
 .generate-transcription-btn {
@@ -285,6 +329,7 @@ body {
   color: white;
   cursor: pointer;
   flex-shrink: 0;
+  padding: 0;
 }
 
 .status-toggle.completed {
